@@ -1,0 +1,1926 @@
+/* =====================================================================
+   style.css —— 社死指数评估器 · 全局样式表
+   =====================================================================
+   目录结构：
+     1.  CSS 变量与设计令牌
+     2.  基础重置
+     3.  通用布局（容器 / 头部 / 页面切换 / 页脚）
+     4.  按钮组件
+     5.  首页（Hero / 患者表单 / 功能卡片）
+     6.  测试页（进度条 / 选项网格 / 导航）
+     7.  结果页（诊断报告全套样式）
+     8.  历史记录页
+     9.  动画与动效
+     10. 响应式适配
+     11. 打印样式
+   ===================================================================== */
+
+/* =====================================================================
+ * 1. CSS 变量与设计令牌
+ * =====================================================================
+ * 使用 CSS 自定义属性集中管理主题色、间距、阴影等，
+ * 方便后续整体换肤或统一调整视觉风格。
+ * =================================================================== */
+:root {
+    /* —— 主品牌色 —— */
+    --color-primary: #6554c0;        /* 主色（粉红） */
+    --color-secondary: #356c91;      /* 辅助色（橙） */
+    --color-accent: #42688d;         /* 强调色（医疗蓝，用于诊断书） */
+
+    /* —— 中性色 —— */
+    --color-bg: #f4f3f9;             /* 页面背景 */
+    --color-surface: #ffffff;        /* 卡片/面板背景 */
+    --color-text: #26243c;           /* 主文本色 */
+    --color-text-light: #605d75;     /* 次级文本 */
+    --color-text-muted: #716e84;     /* 弱化文本 */
+    --color-border: #e3e1ee;         /* 边框色 */
+
+    /* —— 语义色 —— */
+    --color-success: #20c997;        /* 成功/轻度 */
+    --color-warning: #ffc107;        /* 警告/中度 */
+    --color-danger: #dc3545;         /* 危险/危重 */
+    --color-info: #17a2b8;           /* 信息 */
+
+    /* —— 圆角与阴影 —— */
+    --radius-sm: 8px;                /* 小圆角 */
+    --radius: 12px;                  /* 常规圆角 */
+    --radius-lg: 20px;               /* 大圆角 */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
+    --shadow-primary: 0 6px 20px rgba(101, 84, 192, 0.4);
+
+    /* —— 字体 —— */
+    --font-family: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+
+    /* —— 过渡 —— */
+    --transition-fast: 0.2s ease;
+    --transition: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* =====================================================================
+ * 2. 基础重置
+ * =====================================================================
+ * 清除浏览器默认外边距/内边距，开启 border-box 盒模型，
+ * 统一字体与行高，避免不同浏览器之间的渲染差异。
+ * =================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 根元素与页面基础样式 */
+html {
+    /* 让滚动更顺滑（锚点定位时体验更好） */
+    scroll-behavior: smooth;
+    /* 防止移动端字体自动放大 */
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    /* 页面渐变背景 */
+    background: radial-gradient(ellipse at 15% 0%, #e6e0fa 0%, transparent 55%), linear-gradient(145deg, #f7f6fb, #eaf1f5);
+    /* 背景固定，滚动时不随内容移动，增强质感 */
+    background-attachment: fixed;
+    color: var(--color-text);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    line-height: 1.6;
+    /* 启用小卡片的适配件，避免出现滚动跳动 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 统一图片/媒体元素为块级并限制宽度 */
+img,
+svg,
+video {
+    max-width: 100%;
+    display: block;
+}
+
+/* 去除按钮默认样式（后续由组件类接管） */
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+/* 统一输入控件字体 */
+input,
+select,
+textarea {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+/* =====================================================================
+ * 3. 通用布局
+ * ===================================================================== */
+
+/* —— 应用根容器 —— */
+.app-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    /* 保证内容纵向居中感 */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* —— 主内容区填充剩余空间，把页脚压到底部 —— */
+.app-main {
+    flex: 1;
+}
+
+/* —— 顶部头部 —— */
+.app-header {
+    position: relative;   /* 为右上角的主题切换按钮提供定位基准 */
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    animation: slideDown 0.6s ease;
+}
+
+/* 主标题：渐变文字 */
+.app-header h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+/* 头部骷髅图标（保留独立颜色，不受渐变影响） */
+.app-header h1 i {
+    color: var(--color-primary);
+    filter: drop-shadow(0 2px 4px rgba(101, 84, 192, 0.4));
+}
+
+/* 副标题 */
+.subtitle {
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+}
+
+/* —— 页面切换机制 —— */
+/* 所有 .page 默认隐藏，只有 .active 才显示 */
+.page {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.page.active {
+    display: block;
+}
+
+/* —— 页脚 —— */
+.app-footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #eee;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.footer-version {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* =====================================================================
+ * 4. 按钮组件
+ * ===================================================================== */
+
+/* 按钮基类（primary / secondary 共用） */
+.btn-primary,
+.btn-secondary {
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    /* 统一设置文字颜色 */
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* 主按钮：品牌渐变 */
+.btn-primary {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(101, 84, 192, 0.3);
+}
+
+/* 主按钮悬停：上浮 + 增强阴影 */
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-primary);
+}
+
+/* 主按钮按下：轻微下沉，营造真实手感 */
+.btn-primary:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(101, 84, 192, 0.35);
+}
+
+/* 次按钮：浅灰底 */
+.btn-secondary {
+    background: var(--color-border);
+    color: #495057;
+}
+
+/* 次按钮悬停 */
+.btn-secondary:hover {
+    background: #dee2e6;
+    transform: translateY(-2px);
+}
+
+/* 禁用态：半透明 + 禁止点击 */
+.btn-primary:disabled,
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* =====================================================================
+ * 5. 首页样式
+ * ===================================================================== */
+
+/* —— Hero 主卡片 —— */
+.hero {
+    background: var(--color-surface);
+    padding: 3rem 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    text-align: center;
+    animation: scaleIn 0.5s ease;
+}
+
+.hero h2 {
+    margin-bottom: 1rem;
+    color: #444;
+    font-size: 1.6rem;
+}
+
+/* 首页引导文案 */
+.hero-lead {
+    margin-bottom: 1.5rem;
+    color: var(--color-text-light);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 首页流程说明 */
+.hero-note {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.hero-note i {
+    color: var(--color-primary);
+}
+
+/* —— 患者信息表单 —— */
+.patient-form {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    margin: 1.5rem auto;
+    max-width: 500px;
+    text-align: left;
+    border: 1px solid #f1f1f1;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+    color: #444;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.form-group label i {
+    color: var(--color-primary);
+}
+
+/* 年龄输入框 */
+#patient-age {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+/* 年龄输入框聚焦 */
+#patient-age:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(101, 84, 192, 0.2);
+    outline: none;
+}
+
+/* 年龄输入框错误态（红色边框 + 抖动提示） */
+#patient-age.input-error {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+    animation: shake 0.4s ease;
+}
+
+/* 表单校验提示（默认隐藏，出错时由 JS 添加 .show） */
+.form-hint {
+    display: none;
+    color: var(--color-danger);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.form-hint.show {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+/* —— 性别选择按钮组 —— */
+.gender-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.gender-option {
+    flex: 1;
+    min-width: 80px;
+}
+
+/* 隐藏原生单选按钮（使用自定义样式替代） */
+.gender-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* 自定义性别按钮外观 */
+.gender-btn {
+    display: block;
+    padding: 0.8rem 0.5rem;
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    font-size: 0.95rem;
+    user-select: none;
+}
+
+/* 性别按钮悬停 */
+.gender-btn:hover {
+    background: var(--color-border);
+    transform: translateY(-2px);
+}
+
+/* 选中状态的性别按钮（兄弟选择器 + 相邻按钮） */
+.gender-option input[type="radio"]:checked + .gender-btn {
+    background: linear-gradient(135deg, rgba(101, 84, 192, 0.15), rgba(53, 108, 145, 0.15));
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(101, 84, 192, 0.2);
+}
+
+/* 键盘聚焦可见性（提升无障碍体验） */
+.gender-option input[type="radio"]:focus-visible + .gender-btn {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* —— 功能特性卡片 —— */
+.feature-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.feature-card {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: transform var(--transition), box-shadow var(--transition);
+    border: 1px solid #f1f1f1;
+}
+
+/* 功能卡片悬停上浮 */
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.feature-card h3 {
+    color: #444;
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+}
+
+.feature-card p {
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+}
+
+/* =====================================================================
+ * 6. 测试页样式
+ * ===================================================================== */
+
+/* —— 步骤容器 —— */
+.step-container {
+    background: var(--color-surface);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    animation: slideUp 0.4s ease;
+}
+
+.step-container h2 {
+    margin-bottom: 1.5rem;
+    color: #444;
+    text-align: center;
+    font-size: 1.3rem;
+    line-height: 1.5;
+}
+
+/* 标题中的小字说明 */
+.step-container h2 small {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    font-weight: normal;
+    margin-top: 0.4rem;
+}
+
+/* —— 进度指示器 —— */
+.progress-indicator {
+    margin-bottom: 2rem;
+}
+
+/* 顶部进度条轨道 */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+/* 进度条填充（JS 控制 width） */
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    border-radius: 4px;
+    transition: width var(--transition);
+}
+
+/* 步骤圆点容器 */
+.step-dots {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 0 10px;
+}
+
+/* 单个步骤圆点 */
+.step-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--color-border);
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    z-index: 2;
+    transition: all var(--transition);
+    cursor: default;
+}
+
+/* 已完成的圆点（完成态用勾号区分） */
+.step-dot.completed {
+    background: linear-gradient(135deg, var(--color-success), #12b886);
+    color: #fff;
+}
+
+/* 当前激活圆点 */
+.step-dot.active {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: #fff;
+    transform: scale(1.15);
+    box-shadow: 0 4px 10px rgba(101, 84, 192, 0.4);
+}
+
+/* —— 选项网格 —— */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* 单个选项卡片 */
+.option {
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    user-select: none;
+    position: relative;
+}
+
+/* 选项悬停 */
+.option:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow);
+}
+
+/* 选项选中态 */
+.option.selected {
+    background: linear-gradient(135deg, rgba(101, 84, 192, 0.13), rgba(53, 108, 145, 0.13));
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    box-shadow: 0 4px 14px rgba(101, 84, 192, 0.25);
+}
+
+/* 选中态右上角对勾 */
+.option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-weight: bold;
+    color: var(--color-primary);
+    animation: pop 0.3s ease;
+}
+
+/* 选项表情 */
+.option-emoji {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* 选项标题 */
+.option-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+    line-height: 1.4;
+}
+
+/* 选项分值徽章 */
+.option-score {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    background: linear-gradient(135deg, var(--color-success), #12b886);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* —— 底部导航 —— */
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    gap: 1rem;
+}
+
+/* —— 键盘提示 —— */
+.keyboard-hint {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    margin-top: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* =====================================================================
+ * 7. 结果页 / 诊断报告样式
+ * ===================================================================== */
+
+/* 结果页容器 */
+.result-container {
+    text-align: center;
+}
+
+/* —— 诊断报告整体卡片 —— */
+.diagnosis-report {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+    text-align: left;
+    animation: scaleIn 0.5s ease;
+}
+
+/* —— 报告头部 —— */
+.report-header {
+    border-bottom: 3px double var(--color-accent);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.hospital-info h2 {
+    color: var(--color-accent);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hospital-details {
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* —— 患者信息 —— */
+.patient-info {
+    background: var(--color-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2rem;
+    border-left: 4px solid var(--color-accent);
+}
+
+.patient-info h3 {
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #ddd;
+    gap: 1rem;
+}
+
+.info-label {
+    color: var(--color-text-light);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.info-value {
+    color: var(--color-text);
+    text-align: right;
+    word-break: break-all;
+}
+
+/* —— 检查结果 —— */
+.examination-results {
+    margin-bottom: 2rem;
+}
+
+.examination-results h3 {
+    color: var(--color-accent);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* —— 综合指数环形图 —— */
+.overall-score {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.score-circle {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+}
+
+/* 使用 conic-gradient 绘制圆环进度 */
+.circle-progress {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(
+        #6554c0 0%,
+        #356c91 calc(var(--progress) * 0.5),
+        #6554c0 var(--progress),
+        var(--color-border) var(--progress),
+        var(--color-border) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 圆环内部挖空（形成环形效果） */
+.circle-progress::before {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: #fff;
+    border-radius: 50%;
+    top: 15px;
+    left: 15px;
+}
+
+/* 百分比数字 */
+.percentage {
+    position: relative;
+    z-index: 2;
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6554c0, #356c91);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* 圆环下方标签 */
+.score-label {
+    margin-top: 1rem;
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+}
+
+/* —— 各维度分析 —— */
+.dimension-analysis {
+    background: var(--color-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius-sm);
+    margin-top: 2rem;
+}
+
+.dimension-analysis h4 {
+    color: var(--color-text-light);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dimension-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dimension-item {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--color-accent);
+}
+
+.dimension-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.dimension-name {
+    font-weight: bold;
+    color: var(--color-text);
+}
+
+.dimension-value {
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+/* 维度内部的进度条（复用全局 .progress-bar/.progress-fill） */
+
+/* —— 诊断结论 —— */
+.diagnosis-conclusion {
+    margin-bottom: 2rem;
+}
+
+.diagnosis-conclusion h3 {
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 结论文案卡片（按等级变色） */
+.conclusion-card {
+    background: #fff;
+    border-radius: var(--radius-sm);
+    padding: 1.5rem;
+    border: 2px solid;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.conclusion-card.mild { border-color: var(--color-success); }
+.conclusion-card.moderate { border-color: var(--color-warning); }
+.conclusion-card.severe { border-color: #fd7e14; }
+.conclusion-card.critical { border-color: var(--color-danger); }
+
+.diagnosis-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid currentColor;
+}
+
+.badge-icon {
+    font-size: 2.5rem;
+}
+
+.diagnosis-badge h4 {
+    font-size: 1.5rem;
+    color: inherit;
+    margin: 0;
+}
+
+.diagnosis-details p {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+}
+
+/* —— 毒舌点评（结果页额外彩蛋） —— */
+.snarky-comment {
+    font-style: italic;
+    background: linear-gradient(135deg, #fff9db, #ffe8cc);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid var(--color-warning);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.snarky-comment::before {
+    content: '“';
+    font-size: 2rem;
+    color: var(--color-warning);
+    margin-right: 0.25rem;
+}
+
+.snarky-comment::after {
+    content: '”';
+    font-size: 2rem;
+    color: var(--color-warning);
+    margin-left: 0.25rem;
+}
+
+/* —— 治疗预案 —— */
+.treatment-plan {
+    background: var(--color-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2rem;
+}
+
+.treatment-plan h3 {
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.prescription {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.medicine-list {
+    margin-bottom: 1.5rem;
+}
+
+.medicine-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+    border-bottom: 1px dashed #ddd;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.medicine-item:last-child {
+    border-bottom: none;
+}
+
+.medicine-name {
+    font-weight: bold;
+    color: var(--color-accent);
+}
+
+.medicine-dosage {
+    color: var(--color-text-light);
+    font-style: italic;
+}
+
+.doctor-advice {
+    background: #fff9e6;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid var(--color-warning);
+}
+
+.doctor-advice p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* —— 医生签名 —— */
+.doctor-signature {
+    text-align: right;
+    margin: 2rem 0;
+    padding-top: 1rem;
+    border-top: 2px solid var(--color-accent);
+}
+
+.signature-box {
+    display: inline-block;
+    text-align: center;
+    min-width: 200px;
+}
+
+.doctor-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--color-accent);
+    font-family: '楷体', 'KaiTi', cursive;
+}
+
+.signature-line {
+    width: 150px;
+    height: 2px;
+    background: var(--color-text);
+    margin: 1rem auto;
+}
+
+.signature-date {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+/* —— 操作按钮 —— */
+.report-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+/* —— 免责声明 —— */
+.disclaimer {
+    background: #fff3cd;
+    border: 1px solid var(--color-warning);
+    border-radius: 6px;
+    padding: 1rem;
+    color: #856404;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.disclaimer i {
+    color: var(--color-warning);
+    margin-right: 0.5rem;
+}
+
+/* =====================================================================
+ * 8. 历史记录页
+ * ===================================================================== */
+.history-container {
+    background: var(--color-surface);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    animation: fadeIn 0.4s ease;
+}
+
+.history-container h2 {
+    margin-bottom: 1.5rem;
+    color: #444;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* 历史记录空状态 */
+.history-empty {
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: 2rem 0;
+}
+
+.history-empty i {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.75rem;
+    opacity: 0.4;
+}
+
+/* 单条历史记录卡片 */
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--color-bg);
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--color-primary);
+    transition: transform var(--transition), box-shadow var(--transition);
+    text-align: left;
+}
+
+.history-item:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.history-emoji {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.history-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-title {
+    font-weight: bold;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+}
+
+.history-meta {
+    color: var(--color-text-light);
+    font-size: 0.8rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.history-score {
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.history-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* =====================================================================
+ * 9. 动画与动效
+ * ===================================================================== */
+
+/* 淡入 + 轻微上移 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 上滑进入 */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 下滑进入 */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 缩放入场 */
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* 弹跳出现（用于对勾等小元素） */
+@keyframes pop {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* 头像/emoji 轻微浮动 */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* 输入错误抖动（左右晃动提示用户） */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+/* 页面标题图标浮动（增加趣味） */
+.app-header h1 i {
+    animation: float 3s ease-in-out infinite;
+    display: inline-block;
+}
+
+/* 减少动态偏好（尊重系统设置） */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* =====================================================================
+ * 9.5 Toast 轻提示组件
+ * =====================================================================
+ * 用于替代原生 alert 的轻量提示，显示在页面顶部居中位置。
+ * 由 script.js 中的 showToast() 动态创建。
+ * =================================================================== */
+
+/* —— Toast 容器（固定在顶部，不阻挡页面点击） —— */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none; /* 容器本身不拦截点击 */
+}
+
+/* —— 单条 Toast —— */
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 0.8rem 1.4rem;
+    border-radius: 50px;
+    box-shadow: var(--shadow-lg);
+    font-size: 0.95rem;
+    animation: toastIn 0.3s ease;
+    pointer-events: auto; /* 提示本体可点击（便于复制等） */
+    max-width: 90vw;
+}
+
+/* —— 不同类型 Toast 的背景色 —— */
+.toast-success { background: rgba(32, 201, 151, 0.95); }
+.toast-error   { background: rgba(220, 53, 69, 0.95); }
+.toast-info    { background: rgba(0, 102, 204, 0.95); }
+
+/* —— 淡出隐藏态（由 JS 添加 .hide） —— */
+.toast.hide {
+    animation: toastOut 0.3s ease forwards;
+}
+
+.toast-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.toast-msg {
+    line-height: 1.4;
+    word-break: break-all;
+}
+
+/* —— Toast 入场动画 —— */
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* —— Toast 退场动画 —— */
+@keyframes toastOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-20px); }
+}
+
+/* =====================================================================
+ * 10. 响应式适配
+ * ===================================================================== */
+
+/* —— 平板 / 手机（≤768px） —— */
+@media (max-width: 768px) {
+    .app-container {
+        padding: 15px;
+    }
+
+    .app-header {
+        padding: 1.5rem 0;
+    }
+
+    .app-header h1 {
+        font-size: 2rem;
+    }
+
+    .hero {
+        padding: 2rem 1rem;
+    }
+
+    .hero h2 {
+        font-size: 1.3rem;
+    }
+
+    .feature-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .options-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .option {
+        padding: 1rem 0.5rem;
+    }
+
+    .option-emoji {
+        font-size: 1.6rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.85rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .navigation {
+        flex-direction: column-reverse;
+    }
+
+    .navigation .btn-primary,
+    .navigation .btn-secondary {
+        width: 100%;
+    }
+
+    /* —— 诊断报告移动端 —— */
+    .diagnosis-report {
+        padding: 1rem;
+    }
+
+    .hospital-details {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-actions {
+        flex-direction: column;
+    }
+
+    .report-actions .btn-primary,
+    .report-actions .btn-secondary {
+        width: 100%;
+    }
+
+    .score-circle {
+        width: 120px;
+        height: 120px;
+    }
+
+    .circle-progress::before {
+        width: 96px;
+        height: 96px;
+        top: 12px;
+        left: 12px;
+    }
+
+    .percentage {
+        font-size: 2rem;
+    }
+
+    /* —— 患者表单移动端 —— */
+    .patient-form {
+        padding: 1.2rem;
+        margin: 1.5rem 0;
+    }
+
+    .gender-options {
+        flex-direction: column;
+    }
+
+    .gender-option {
+        min-width: auto;
+    }
+
+    /* —— 历史记录移动端 —— */
+    .history-item {
+        flex-wrap: wrap;
+    }
+}
+
+/* —— 小屏手机（≤420px） —— */
+@media (max-width: 420px) {
+    .options-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .app-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .hero {
+        padding: 1.5rem 0.75rem;
+    }
+}
+
+/* =====================================================================
+ * 11. 打印样式
+ * =====================================================================
+ * 打印报告时隐藏操作按钮和页脚，并优化黑白打印效果。
+ * =================================================================== */
+@media print {
+    /* 隐藏交互类元素 */
+    .report-actions,
+    .app-footer,
+    .app-header,
+    .feature-cards,
+    .keyboard-hint,
+    .navigation {
+        display: none !important;
+    }
+
+    /* 报告打印时去阴影、去内边距 */
+    .diagnosis-report {
+        box-shadow: none;
+        padding: 0;
+    }
+
+    /* 页面背景强制白色 */
+    body {
+        background: #fff !important;
+    }
+
+    /* 避免卡片内部被分页截断 */
+    .diagnosis-report,
+    .patient-info,
+    .examination-results,
+    .treatment-plan {
+        break-inside: avoid;
+    }
+}
+
+/* =====================================================================
+ * 12. 扩展模块样式（补全）
+ * =====================================================================
+ * 为补齐的扩展功能提供视觉样式，包括：
+ *   - 深色模式切换按钮
+ *   - 答题计时器 / 题目序号
+ *   - 深色模式变量覆盖
+ *   - 致命错误遮罩
+ *   - 彩带动画
+ *   - 结果页增强内容（雷达图 / 成就 / 排行榜 / 分享）
+ * =================================================================== */
+
+/* ---------------------------------------------------------------------
+ * 12.1 深色模式切换按钮
+ * ---------------------------------------------------------------------
+ * 固定在页头右上角，圆角胶囊造型，hover 时轻微上浮。
+ * ------------------------------------------------------------------- */
+.theme-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--color-text);
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    background: #fff;
+}
+
+.theme-toggle i {
+    color: var(--color-primary);
+}
+
+/* 深色模式下的按钮配色 */
+body.dark-theme .theme-toggle {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e6e6e6;
+}
+
+body.dark-theme .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+/* ---------------------------------------------------------------------
+ * 12.2 答题计时器与题目序号
+ * ---------------------------------------------------------------------
+ * .quiz-meta 位于测试页顶部，用于展示答题用时与当前题号。
+ * ------------------------------------------------------------------- */
+.quiz-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.75rem 0 1.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+
+.quiz-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.quiz-timer i {
+    color: var(--color-primary);
+}
+
+#timer-display {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--color-text);
+    min-width: 2.6em;
+    text-align: center;
+}
+
+.quiz-progress-text {
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+/* ---------------------------------------------------------------------
+ * 12.3 深色模式变量覆盖
+ * ---------------------------------------------------------------------
+ * 通过在 body 上添加 .dark-theme 类，覆盖 CSS 变量实现整套深色主题，
+ * 无需逐个组件重写配色。
+ * ------------------------------------------------------------------- */
+body.dark-theme {
+    --color-bg: #14161c;
+    --color-surface: #1f232c;
+    --color-text: #e6e6e6;
+    --color-text-light: #b3b3b3;
+    --color-text-muted: #888888;
+    --color-border: #343a45;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(135deg, #171a21 0%, #0e1015 100%);
+}
+
+/* 深色模式下的卡片 / 面板微调 */
+body.dark-theme .hero,
+body.dark-theme .patient-form,
+body.dark-theme .step-container,
+body.dark-theme .history-container,
+body.dark-theme .diagnosis-report {
+    background: var(--color-surface);
+}
+
+/* 深色模式下报告内的次级卡片 */
+body.dark-theme .conclusion-card,
+body.dark-theme .info-grid .info-item {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* ---------------------------------------------------------------------
+ * 12.4 致命错误遮罩
+ * ---------------------------------------------------------------------
+ * 初始化失败时显示的全屏遮罩，居中展示错误卡片。
+ * ------------------------------------------------------------------- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fatal-error-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+}
+
+.fatal-error-card {
+    max-width: 460px;
+    width: 100%;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    animation: fadeInUp 0.35s ease;
+}
+
+.fatal-error-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.fatal-error-card h2 {
+    color: var(--color-danger);
+    margin-bottom: 0.75rem;
+}
+
+.fatal-error-card p {
+    color: var(--color-text-light);
+    margin-bottom: 0.5rem;
+}
+
+.fatal-error-msg {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    background: rgba(220, 53, 69, 0.08);
+    color: var(--color-danger);
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.fatal-error-tip {
+    font-size: 0.85rem;
+}
+
+/* ---------------------------------------------------------------------
+ * 12.5 彩带动画
+ * ---------------------------------------------------------------------
+ * 结果页庆祝彩带：绝对定位的纸片从顶部飘落并旋转。
+ * ------------------------------------------------------------------- */
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;      /* 不拦截鼠标事件 */
+    overflow: hidden;
+    z-index: 9998;
+}
+
+.confetti-piece {
+    position: absolute;
+    top: -20px;
+    border-radius: 2px;
+    opacity: 0.9;
+    animation-name: confettiFall;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0.2;
+    }
+}
+
+/* ---------------------------------------------------------------------
+ * 12.6 结果页增强内容容器
+ * ---------------------------------------------------------------------
+ * 包裹雷达图 / 成就 / 排行榜 / 分享等扩展区块。
+ * ------------------------------------------------------------------- */
+.result-enhancements {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.enhancement-section {
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: var(--shadow-sm);
+}
+
+body.dark-theme .enhancement-section {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.enhancement-section h3 {
+    margin-bottom: 1rem;
+    color: var(--color-text);
+    font-size: 1.05rem;
+}
+
+.enhancement-section h3 i {
+    color: var(--color-primary);
+    margin-right: 0.4rem;
+}
+
+/* ---------------------------------------------------------------------
+ * 12.7 雷达图
+ * ------------------------------------------------------------------- */
+.radar-chart {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.radar-grid {
+    fill: none;
+    stroke: var(--color-border);
+    stroke-width: 1;
+}
+
+.radar-axis {
+    stroke: var(--color-border);
+    stroke-width: 1;
+}
+
+.radar-data {
+    fill: rgba(101, 84, 192, 0.25);
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-linejoin: round;
+}
+
+.radar-label {
+    fill: var(--color-text-light);
+    font-size: 11px;
+    text-anchor: middle;
+}
+
+/* ---------------------------------------------------------------------
+ * 12.8 成就徽章
+ * ------------------------------------------------------------------- */
+.achievement-badges {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+}
+
+.achievement-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.9rem 0.6rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    transition: transform var(--transition-fast);
+}
+
+.achievement-badge:hover {
+    transform: translateY(-3px);
+}
+
+.achievement-badge.unlocked {
+    border-color: var(--color-primary);
+    background: linear-gradient(135deg, rgba(101, 84, 192, 0.08), rgba(53, 108, 145, 0.08));
+}
+
+.achievement-badge.locked {
+    opacity: 0.5;
+    filter: grayscale(0.6);
+}
+
+.achievement-emoji {
+    font-size: 1.6rem;
+}
+
+.achievement-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+    text-align: center;
+}
+
+.achievement-empty {
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* ---------------------------------------------------------------------
+ * 12.9 排行榜
+ * ------------------------------------------------------------------- */
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+}
+
+.leaderboard-rank {
+    font-size: 1.1rem;
+    min-width: 1.8em;
+    text-align: center;
+}
+
+.leaderboard-name {
+    flex: 1;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.leaderboard-level {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    background: rgba(0, 102, 204, 0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+}
+
+.leaderboard-score {
+    font-weight: 700;
+    color: var(--color-primary);
+    min-width: 3.2em;
+    text-align: right;
+}
+
+.leaderboard-empty {
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* ---------------------------------------------------------------------
+ * 12.10 分享文案
+ * ------------------------------------------------------------------- */
+.share-slogan {
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* ---------------------------------------------------------------------
+ * 12.11 打印时隐藏新组件
+ * ------------------------------------------------------------------- */
+@media print {
+    .confetti-container,
+    .fatal-error-overlay,
+    .toast-container,
+    .result-enhancements {
+        display: none !important;
+    }
+}
+/* 分享海报与主题细节 */
+:root { --shadow-primary: 0 6px 20px rgba(101, 84, 192, .24); }
+body.dark-theme { --color-primary: #b4a5ff; --color-secondary: #83bed7; --color-accent: #9cbee5; }
+.btn-primary { color: #fff; }
+body.dark-theme .btn-primary { background: linear-gradient(135deg, #6554c0, #356c91); }
+body.dark-theme .option, body.dark-theme .dimension-item,
+body.dark-theme .prescription { background: var(--color-surface); }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 4px; }
+.poster-dialog { margin: auto; width: min(480px, calc(100% - 24px)); max-height: 92vh; max-height: 92dvh; padding: 24px; border: 1px solid var(--color-border); border-radius: 24px; background: var(--color-surface); color: var(--color-text); box-shadow: var(--shadow-lg); overflow-y: auto; }
+.poster-dialog::backdrop { background: rgba(25, 22, 43, .65); backdrop-filter: blur(6px); }
+.poster-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+.poster-heading h2 { font-size: 1.3rem; }
+.poster-heading p, .poster-note { color: var(--color-text-light); font-size: .85rem; }
+.poster-close { color: var(--color-text-light); font-size: 1.8rem; line-height: 1; padding: 4px 8px; border-radius: 8px; }
+#poster-preview { width: 100%; height: auto; border-radius: 16px; box-shadow: var(--shadow-sm); }
+.poster-note { margin: 16px 0; text-align: center; }
+#poster-download { display: flex; justify-content: center; text-decoration: none; }
+@media print { .poster-dialog { display: none !important; } }

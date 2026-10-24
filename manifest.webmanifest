@@ -1,0 +1,32 @@
+{
+  "id": "./",
+  "name": "社死指数评估器",
+  "short_name": "社死评估器",
+  "description": "四步还原社死现场，生成你的专属娱乐评估报告。",
+  "lang": "zh-CN",
+  "start_url": "/social-death-pwa/",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f3f9",
+  "theme_color": "#6554c0",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

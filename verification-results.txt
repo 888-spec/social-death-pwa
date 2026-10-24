@@ -1,0 +1,24 @@
+PASS 全部 JavaScript 语法通过
+PASS 清单使用独立窗口与相对路径
+PASS icons/icon-192.png 尺寸正确
+PASS icons/icon-512.png 尺寸正确
+PASS icons/icon-maskable-512.png 尺寸正确
+PASS 页面加载不依赖外部 CDN
+PASS 原功能文件保持一致 script.js
+PASS 原功能文件保持一致 data.js
+PASS 原功能文件保持一致 style.css
+PASS 所有预缓存资源存在
+PASS Service Worker 安装缓存完整
+PASS 只清理本应用旧缓存并接管页面
+PASS 离线导航命中首页
+PASS 离线题库命中缓存
+PASS 用户确认后激活新版本
+PASS 不拦截外域请求
+PASS 苹果显示 Safari 安装指引
+PASS 缓存完成后显示离线就绪
+PASS 断网状态提示
+PASS 安卓显示浏览器安装指引
+PASS 安卓原生安装提示接入
+PASS 已安装窗口隐藏安装按钮
+PASS 本地文件说明 HTTPS 部署要求
+LIMIT: Browser launch blocked by environment (spawn EPERM). No real device installation or browser layout verification performed.

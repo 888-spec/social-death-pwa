@@ -1,0 +1,18 @@
+
+[hidden] { display: none !important; }
+body { min-height: 100dvh; }
+.app-container { padding-top: max(20px, env(safe-area-inset-top)); padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+.pwa-panel, .pwa-update { display:flex; gap:12px; align-items:center; justify-content:space-between; border:1px solid var(--color-border); border-radius:16px; padding:16px; margin-bottom:20px; background:var(--color-surface); }
+.pwa-panel strong { font-size: .95rem; }
+.pwa-panel p { font-size:.8rem; color:var(--color-text-light); margin-top:4px; }
+.pwa-panel button { flex-shrink:0; min-height:44px; padding:10px 14px; font-size:.85rem; }
+.pwa-update { font-size:.85rem; border-color:var(--color-primary); }
+#pwa-help { margin:auto; padding:28px; width:min(440px,calc(100% - 32px)); max-height:85dvh; overflow:auto; background:var(--color-surface); color:var(--color-text); border:1px solid var(--color-border); border-radius:20px; box-shadow:var(--shadow-lg); }
+#pwa-help::backdrop { background:rgba(20,18,40,.55); }
+#pwa-help h2 { font-size:1.2rem; margin:12px 0; padding-right:16px; }
+#pwa-help p { line-height:1.8; white-space:pre-line; }
+.pwa-close { position:absolute; right:12px; top:8px; width:44px; height:44px; font-size:28px; color:inherit; }
+.pwa-help-note { margin-top:16px; font-size:.8rem; color:var(--color-text-light); }
+button, input { touch-action:manipulation; }
+@media(max-width:420px) { .pwa-panel { flex-wrap:wrap; } .pwa-panel button { width:100%; } .pwa-update { flex-wrap:wrap; } }
+@media print { .pwa-panel,.pwa-update,#pwa-help { display:none !important; } }
